@@ -1,33 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projects</title>
-    <style>
-        body { font-family: system-ui, sans-serif; max-width: 800px; margin: 0 auto; padding: 2rem; }
-        h1 { margin-bottom: 2rem; }
-        .project { margin-bottom: 2rem; padding: 1rem; background: #f5f5f5; border-radius: 8px; }
-        h2 { margin-top: 0; }
-        a { color: #0366d6; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aaronson's Oracle</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+    h1 { margin-bottom: 5px; }
+    p { margin: 10px 0; }
+    .log {
+      font-family: monospace;
+      font-size: 13px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      height: 200px;
+      overflow-y: auto;
+      margin: 15px 0;
+    }
+    .hit { background: #cfc; }
+    .miss { background: #fcc; }
+    .stats { margin: 15px 0; }
+    .stats span { margin-right: 20px; }
+    button {
+      margin: 15px 0;
+      padding: 5px 15px;
+      cursor: pointer;
+    }
+    small { color: #666; }
+    .projects { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc; }
+    .projects a { margin-right: 15px; }
+  </style>
 </head>
 <body>
-    <h1>Projects</h1>
+  <h1>Aaronson's Oracle</h1>
+  <p>Press left (←) or right (→) arrow keys. Try to be random.</p>
 
-    <div class="project">
-        <h2><a href="https://github.com/hafnium-ham/aaronson_oracle">Aaronson Oracle</a></h2>
-        <p>Personal interest project.</p>
-    </div>
+  <div class="log" id="log">
+    <div style="color:#999">Press an arrow key to start...</div>
+  </div>
 
-    <div class="project">
-        <h2><a href="https://github.com/hafnium-ham/mao_game">Mao Game</a> <em>(In Development)</em></h2>
-        <p>A Mao card game implementation with network support. Built in Python with game logic, networking, and UI components.</p>
-    </div>
+  <div class="stats">
+    <span>choices: <b id="total">0</b></span>
+    <span>correct: <b id="correct">0</b></span>
+    <span>accuracy: <b id="accuracy">0%</b></span>
+  </div>
 
-    <div class="project">
-        <h2><a href="https://github.com/dman7351/mogwai">MOGWAI</a></h2>
-        <p>Stress test toolkit for CI/CD pipelines. Push services to their limits with CPU, memory, and disk I/O tests. Built in Rust with Kubernetes deployment support.</p>
-    </div>
+  <div style="font-size: 32px; font-family: monospace; margin: 15px 0; cursor: pointer; color: #666;" id="next-guess" onclick="revealPrediction()">Click to reveal next guess</div>
+
+  <button onclick="reset()">reset</button>
+
+  <p><small>
+    Uses a Markov chain to track patterns in your choices (up to 5 moves).
+    Humans typically can only achieve 50-60% unpredictability.
+  </small></p>
+
+  <div class="projects">
+    <strong>Other Projects:</strong><br>
+    <a href="https://github.com/hafnium-ham/mao_game">Mao Game</a> (in development)
+    <a href="https://github.com/dman7351/mogwai">MOGWAI</a>
+  </div>
+
+  <script>
+    let history = [];
+    let patterns = {};
+    let prediction = null;
+    let stats = { total: 0, correct: 0 };
+    let isPredictionVisible = false;
+
+    prediction = Math.random() < 0.5 ? '←' : '→';
+    document.getElementById('next-guess').textContent = 'Click to reveal next guess';
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        handleChoice('←');
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        handleChoice('→');
+      }
+    });
+
+    function handleChoice(choice) {
+      const hit = (prediction === choice);
+      if (hit) stats.correct++;
+      stats.total++;
+
+      // Log it
+      const log = document.getElementById('log');
+      if (stats.total === 1) log.innerHTML = '';
+      const div = document.createElement('div');
+      div.className = hit ? 'hit' : 'miss';
+      div.textContent = 'guess: ' + prediction + '  actual: ' + choice;
+      log.appendChild(div);
+      log.scrollTop = log.scrollHeight;
+
+      // Update patterns BEFORE adding to history
+      for (let len = 1; len <= 5 && len <= history.length; len++) {
+        const pat = history.slice(-len).join('');
+        if (!patterns[pat]) patterns[pat] = { '←': 0, '→': 0 };
+        patterns[pat][choice]++;
+      }
+
+      history.push(choice);
+
+      // Update display
+      document.getElementById('total').textContent = stats.total;
+      document.getElementById('correct').textContent = stats.correct;
+      document.getElementById('accuracy').textContent = Math.round(stats.correct / stats.total * 100) + '%';
+
+      // New prediction
+      predict();
+      const guessElement = document.getElementById('next-guess');
+      if (isPredictionVisible) {
+        guessElement.textContent = prediction;
+      }
+    }
+
+    function predict() {
+      if (history.length === 0) {
+        prediction = Math.random() < 0.5 ? '←' : '→';
+        return;
+      }
+      for (let len = Math.min(5, history.length); len >= 1; len--) {
+        const pat = history.slice(-len).join('');
+        if (patterns[pat]) {
+          const c = patterns[pat];
+          prediction = c['→'] > c['←'] ? '→' : '←';
+          return;
+        }
+      }
+      prediction = Math.random() < 0.5 ? '←' : '→';
+    }
+
+
+    function revealPrediction() {
+      const guessElement = document.getElementById('next-guess');
+      if (!isPredictionVisible) {
+        isPredictionVisible = true;
+        guessElement.textContent = prediction;
+        guessElement.style.color = '#000';
+      }
+    }
+
+    function reset() {
+      history = [];
+      patterns = {};
+      stats = { total: 0, correct: 0 };
+      document.getElementById('log').innerHTML = '<div style="color:#999">Press an arrow key to start...</div>';
+      document.getElementById('total').textContent = '0';
+      document.getElementById('correct').textContent = '0';
+      document.getElementById('accuracy').textContent = '0%';
+      prediction = Math.random() < 0.5 ? '←' : '→';
+      isPredictionVisible = false;
+      document.getElementById('next-guess').textContent = 'Click to reveal next guess';
+      document.getElementById('next-guess').style.color = '#666';
+    }
+  </script>
 </body>
 </html>
