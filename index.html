@@ -1,42 +1,246 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="system">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>Ben's Page</title>
     <style>
-        body { font-family: system-ui, sans-serif; max-width: 700px; margin: 0 auto; padding: 2rem; line-height: 1.6; }
-        h1, h2 { color: #333; }
-        h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
-        h2 { border-bottom: 2px solid #ddd; padding-bottom: 0.5rem; margin-top: 2rem; }
-        .tag { background: #0077b6; color: white; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem; }
-        ul { padding-left: 1.5rem; }
-        li { margin: 0.5rem 0; }
-        a { color: #0077b6; }
+        :root {
+            --bg:       #f7f5f0;
+            --bg2:      #eceae4;
+            --text:     #1a1814;
+            --text2:    #6a6560;
+            --accent:   #0077b6;
+            --accent2:  #005f93;
+            --border:   #d6d0c4;
+            --tag-bg:   #0077b6;
+            --tag-text: #fff;
+            --card-bg:  #fff;
+            --shadow:   0 1px 4px rgba(0,0,0,0.08);
+        }
+        @media (prefers-color-scheme: dark) {
+            html[data-theme="system"] {
+                --bg:       #1a1a1e;
+                --bg2:      #222228;
+                --text:     #e8e4dc;
+                --text2:    #9a9690;
+                --accent:   #4db8ff;
+                --accent2:  #79cbff;
+                --border:   #333340;
+                --tag-bg:   #1a4a6b;
+                --tag-text: #9fd4ff;
+                --card-bg:  #222228;
+                --shadow:   0 1px 4px rgba(0,0,0,0.3);
+            }
+        }
+        html[data-theme="dark"] {
+            --bg:       #1a1a1e;
+            --bg2:      #222228;
+            --text:     #e8e4dc;
+            --text2:    #9a9690;
+            --accent:   #4db8ff;
+            --accent2:  #79cbff;
+            --border:   #333340;
+            --tag-bg:   #1a4a6b;
+            --tag-text: #9fd4ff;
+            --card-bg:  #222228;
+            --shadow:   0 1px 4px rgba(0,0,0,0.3);
+        }
+        html[data-theme="light"] {
+            --bg:       #f7f5f0;
+            --bg2:      #eceae4;
+            --text:     #1a1814;
+            --text2:    #6a6560;
+            --accent:   #0077b6;
+            --accent2:  #005f93;
+            --border:   #d6d0c4;
+            --tag-bg:   #0077b6;
+            --tag-text: #fff;
+            --card-bg:  #fff;
+            --shadow:   0 1px 4px rgba(0,0,0,0.08);
+        }
+        html[data-accent="teal"]   { --accent:#2aa198; --accent2:#1d7a72; --tag-bg:#2aa198; }
+        html[data-accent="teal"][data-theme="dark"]   { --accent:#2aa198; --accent2:#3ecfc5; --tag-bg:#164843; --tag-text:#7ee8e3; }
+        html[data-accent="warm"]   { --accent:#c0541a; --accent2:#9c4015; --tag-bg:#c0541a; }
+        html[data-accent="warm"][data-theme="dark"]   { --accent:#ff8c52; --accent2:#ffb088; --tag-bg:#6b2a08; --tag-text:#ffc09a; }
+        html[data-accent="purple"] { --accent:#7c3aed; --accent2:#5b21b6; --tag-bg:#7c3aed; }
+        html[data-accent="purple"][data-theme="dark"] { --accent:#a78bfa; --accent2:#c4b5fd; --tag-bg:#3b1a6b; --tag-text:#c4b5fd; }
+
+        *, *::before, *::after { box-sizing: border-box; }
+        html { transition: background 0.2s, color 0.2s; }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text);
+            background: var(--bg);
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem 4rem;
+        }
+
+        #theme-widget { position: fixed; top: 1rem; right: 1rem; z-index: 100; }
+        #theme-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text2);
+            width: 2rem; height: 2rem;
+            border-radius: 5px;
+            cursor: pointer; font-size: 1rem;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: var(--shadow);
+            font-family: 'Courier New', monospace;
+        }
+        #theme-btn:hover { border-color: var(--accent); color: var(--accent); }
+        #theme-panel {
+            display: none;
+            position: absolute; top: 2.4rem; right: 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px; padding: 0.7rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            min-width: 150px;
+        }
+        #theme-panel.open { display: block; }
+        .tl {
+            font-family: 'Courier New', monospace;
+            font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em;
+            color: var(--text2); margin: 0.5rem 0 0.3rem;
+        }
+        .tl:first-child { margin-top: 0; }
+        .theme-options { display: flex; gap: 0.3rem; }
+        .theme-opt {
+            flex: 1; padding: 0.2rem 0;
+            font-family: 'Courier New', monospace; font-size: 0.65rem;
+            border: 1px solid var(--border); border-radius: 3px;
+            background: var(--bg2); color: var(--text2);
+            cursor: pointer; text-align: center;
+        }
+        .theme-opt:hover, .theme-opt.active { border-color: var(--accent); color: var(--accent); }
+        .accent-options { display: flex; gap: 0.4rem; align-items: center; }
+        .swatch {
+            width: 1.1rem; height: 1.1rem; border-radius: 50%;
+            cursor: pointer; border: 2px solid transparent;
+        }
+        .swatch:hover, .swatch.active { border-color: var(--text); }
+        .swatch[data-val="default"] { background: #0077b6; }
+        .swatch[data-val="teal"]    { background: #2aa198; }
+        .swatch[data-val="warm"]    { background: #c0541a; }
+        .swatch[data-val="purple"]  { background: #7c3aed; }
+
+        h1 { font-size: 1.8rem; font-weight: bold; margin: 0 0 1.8rem; }
+        h2 {
+            font-size: 0.65rem; font-weight: normal;
+            text-transform: uppercase; letter-spacing: 0.12em;
+            color: var(--text2);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.3rem; margin: 2rem 0 0.8rem;
+        }
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        .tag {
+            display: inline-block;
+            background: var(--tag-bg); color: var(--tag-text);
+            padding: 0.05rem 0.4rem; border-radius: 2px;
+            font-size: 0.6rem; letter-spacing: 0.04em;
+            vertical-align: middle; margin-left: 0.3rem;
+        }
+
+        .mao-card {
+            display: block;
+            border: 1px solid var(--accent); border-radius: 5px;
+            padding: 0.8rem 1rem; margin: 0.8rem 0;
+            text-decoration: none; color: var(--text);
+            background: var(--card-bg); box-shadow: var(--shadow);
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+        .mao-card:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,0,0,0.12); text-decoration: none; color: var(--text); }
+        .mao-card-title { color: var(--accent); font-weight: bold; margin-bottom: 0.15rem; }
+        .mao-card-desc  { font-size: 0.9rem; color: var(--text2); margin: 0; }
+        .mao-card-arrow { float: right; color: var(--accent); }
+
+        ul { list-style: none; padding: 0; margin: 0; }
+        li { padding: 0.3rem 0; border-bottom: 1px solid var(--border); }
+        li:last-child { border-bottom: none; }
+
+        footer { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.9rem; color: var(--text2); }
     </style>
 </head>
 <body>
-    <h1>Hi, I'm Ben</h1>
-    <p>!!IN-PROGRESS!!</p>
 
-    <h2>What I'm Doing</h2>
-    <ul>
-        <li><a href="https://github.com/hafnium-ham/mao_game">Mao Game</a> <span class="tag">In Progress</span> — Card game with network support</li>
-    </ul>
+<div id="theme-widget">
+    <button id="theme-btn" title="theme">◐</button>
+    <div id="theme-panel">
+        <div class="tl">Mode</div>
+        <div class="theme-options">
+            <button class="theme-opt" data-theme="system">auto</button>
+            <button class="theme-opt" data-theme="light">light</button>
+            <button class="theme-opt" data-theme="dark">dark</button>
+        </div>
+        <div class="tl">Accent</div>
+        <div class="accent-options">
+            <div class="swatch" data-val="default" title="Blue"></div>
+            <div class="swatch" data-val="teal"    title="Teal"></div>
+            <div class="swatch" data-val="warm"    title="Warm"></div>
+            <div class="swatch" data-val="purple"  title="Purple"></div>
+        </div>
+    </div>
+</div>
 
-    <h2>Projects</h2>
-    <ul>
-        <li><a href="oracle.html">Aaronson Oracle</a> — Try to be random. A Markov chain predicts your next move.</li>
-        <li><a href="https://github.com/dman7351/mogwai">MOGWAI</a> — Stress test toolkit for CI/CD pipelines (contributor)</li>
-    </ul>
+<h1>Hi, I'm Ben</h1>
 
-    <h2>Future Plans</h2>
-    <ul>
-        <li>Finish Mao Game cli(proof of concept)</li>
-        <li>???</li>
-    </ul>
+<h2>Active Project</h2>
 
-    <h2>Contact</h2>
-    <p><a href="https://github.com/hafnium-ham">GitHub</a></p>
+<a class="mao-card" href="https://empire.tail4fb57b.ts.net/" target="_blank" rel="noopener">
+    <span class="mao-card-arrow">→</span>
+    <div class="mao-card-title">Mao (the card game) <span class="tag">live</span></div>
+    <p class="mao-card-desc">Multiplayer card game with network support. Source on <a href="https://github.com/hafnium-ham/mao_game" onclick="event.stopPropagation()">GitHub</a>.</p>
+</a>
+
+<h2>Projects</h2>
+<ul>
+    <li><a href="oracle.html">Aaronson Oracle</a> — Try to be random. A Markov chain predicts your next move.</li>
+    <li><a href="https://github.com/dman7351/mogwai">MOGWAI</a> — Stress test toolkit for CI/CD pipelines (contributor)</li>
+</ul>
+
+<h2>TODO</h2>
+<ul>
+    <li>Finish Mao CLI (proof of concept)</li>
+    <li>???</li>
+</ul>
+
+<footer>
+    <a href="https://github.com/hafnium-ham">GitHub</a>
+</footer>
+
+<script>
+    const html  = document.documentElement;
+    const btn   = document.getElementById('theme-btn');
+    const panel = document.getElementById('theme-panel');
+
+    applyTheme(localStorage.getItem('theme')   || 'system');
+    applyAccent(localStorage.getItem('accent') || 'default');
+
+    btn.addEventListener('click', e => { e.stopPropagation(); panel.classList.toggle('open'); });
+    document.addEventListener('click', () => panel.classList.remove('open'));
+    panel.addEventListener('click', e => e.stopPropagation());
+
+    document.querySelectorAll('.theme-opt').forEach(b =>
+        b.addEventListener('click', () => { applyTheme(b.dataset.theme); localStorage.setItem('theme', b.dataset.theme); }));
+    document.querySelectorAll('.swatch').forEach(s =>
+        s.addEventListener('click', () => { applyAccent(s.dataset.val); localStorage.setItem('accent', s.dataset.val); }));
+
+    function applyTheme(t) {
+        html.dataset.theme = t;
+        document.querySelectorAll('.theme-opt').forEach(b => b.classList.toggle('active', b.dataset.theme === t));
+    }
+    function applyAccent(a) {
+        html.removeAttribute('data-accent');
+        if (a !== 'default') html.dataset.accent = a;
+        document.querySelectorAll('.swatch').forEach(s => s.classList.toggle('active', s.dataset.val === a));
+    }
+</script>
 </body>
 </html>
