@@ -251,18 +251,27 @@
 </script>
 
 <script>
-    (async () => {
-        const tag = document.getElementById('status-tag');
-        const up = await new Promise(resolve => {
-            const img = new Image();
-            const timer = setTimeout(() => { img.src = ''; resolve(false); }, 5000);
-            img.onload  = () => { clearTimeout(timer); resolve(true); };
-            img.onerror = () => { clearTimeout(timer); resolve(true); }; // error = reachable, just not an image
-            img.src = 'https://empire.tail4fb57b.ts.net/?_=' + Date.now();
-        });
-        tag.textContent = up ? 'live' : 'down';
-        tag.classList.add(up ? 'up' : 'down');
-    })();
+(async () => {
+    const tag = document.getElementById('status-tag');
+    const url = 'https://empire.tail4fb57b.ts.net/';
+    
+    let isUp = false;
+
+    try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 5000);
+
+        await fetch(url, { mode: 'no-cors', signal: controller.signal });
+        
+        clearTimeout(timeout);
+        isUp = true;
+    } catch (err) {
+        isUp = false;
+    }
+
+    tag.textContent = isUp ? 'live' : 'down';
+    tag.className = 'tag ' + (isUp ? 'up' : 'down');
+})();
 </script>
 
 </body></html>
