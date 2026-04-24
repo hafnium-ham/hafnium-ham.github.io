@@ -166,6 +166,13 @@
         li:last-child { border-bottom: none; }
 
         footer { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.9rem; color: var(--text2); }
+
+        .tag.up   { background: #1a7a3a; color: #fff; }
+        .tag.down { background: #7a1a1a; color: #ffb3b3; }
+        html[data-theme="dark"] .tag.up,
+        html[data-accent="purple"][data-theme="dark"] .tag.up   { background: #1a4a28; color: #7fd49a; }
+        html[data-theme="dark"] .tag.down,
+        html[data-accent="purple"][data-theme="dark"] .tag.down { background: #4a1a1a; color: #ff9a9a; }
     </style>
 </head>
 <body>
@@ -195,13 +202,14 @@
 
 <a class="mao-card" href="https://empire.tail4fb57b.ts.net/" target="_blank" rel="noopener">
     <span class="mao-card-arrow">→</span>
-    <div class="mao-card-title">Mao (the card game) <span class="tag">live</span></div>
-    </a><p class="mao-card-desc">Multiplayer card game with network support. Source on <a href="https://github.com/hafnium-ham/mao_game" onclick="event.stopPropagation()">GitHub</a>.</p>
+    <div class="mao-card-title">Mao (the card game) <span class="tag" id="status-tag">checking...</span></div></a>
+    Multiplayer card game with network support. Source on <a href="https://github.com/hafnium-ham/mao_game" onclick="event.stopPropagation()">GitHub</a>.
+
 
 
 <h2>Projects</h2>
 <ul>
-    <li><a href="file:///Users/hathsin/Desktop/claude_test/hafnium-ham.github.io/oracle.html">Aaronson Oracle</a> — Try to be random. A Markov chain predicts your next move.</li>
+    <li><a href="oracle.html">Aaronson Oracle</a> — Try to be random. A Markov chain predicts your next move.</li>
     <li><a href="https://github.com/dman7351/mogwai">MOGWAI</a> — Stress test toolkit for CI/CD pipelines (contributor)</li>
 </ul>
 
@@ -243,5 +251,23 @@
     }
 </script>
 
+<script>
+    (async () => {
+        const tag = document.getElementById('status-tag');
+        try {
+            await fetch('https://empire.tail4fb57b.ts.net/', {
+                method: 'HEAD',
+                mode: 'no-cors',
+                cache: 'no-store',
+                signal: AbortSignal.timeout(5000)
+            });
+            tag.textContent = 'live';
+            tag.classList.add('up');
+        } catch {
+            tag.textContent = 'down';
+            tag.classList.add('down');
+        }
+    })();
+</script>
 
 </body></html>
