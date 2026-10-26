@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anemoia - Media</title>
+<script src="assets/js/site.js" defer></script>
+<style>
+  :root {
+    --card-bg: #cfcfcf;
+    --card-text: #16151a;
+    --face-lo: #808080;
+    --nav-bg: #3a2a55;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: Tahoma, Verdana, Arial, sans-serif;
+    margin: 0;
+    padding: 1.5rem;
+    color: #1a1814;
+    background: url('assets/img/backgrnd.jpg') center/cover no-repeat fixed;
+    min-height: 100vh;
+    position: relative;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: -1;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr 1fr;
+    gap: 14px;
+    align-items: start;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .col {
+    min-width: 0; /* lets the scrolling rows shrink instead of stretching the grid */
+    padding: 16px;
+    background: var(--card-bg);
+    color: var(--card-text);
+    border-radius: 6px;
+    border: 1px solid var(--face-lo);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.35);
+  }
+
+  @media (max-width: 760px) {
+    .layout { grid-template-columns: 1fr; }
+    .col.col-right { display: none; } 
+  }
+
+  h1, h2 { font-family: Tahoma, Verdana, sans-serif; color: var(--card-text); }
+  h2 {
+    font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em;
+    border-bottom: 2px solid var(--face-lo);
+    padding-bottom: 4px; margin: 0 0 10px;
+  }
+
+  nav.tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 20px;
+  }
+  nav.tabs a {
+    text-decoration: none;
+    color: var(--card-text);
+    background: transparent;
+    padding: 10px 4px;
+    font-size: 0.85rem;
+    border-bottom: 1px solid var(--face-lo);
+    display: block;
+    transition: color 0.1s ease;
+  }
+  nav.tabs a:last-child {
+    border-bottom: none;
+  }
+  nav.tabs a:hover { 
+    color: #8c53d4; 
+  }
+  nav.tabs a.active { 
+    color: #5c2c9c; 
+    font-weight: bold; 
+  }
+
+  hr { border: 0; border-top: 1px solid var(--face-lo); margin: 20px 0; }
+
+  /* ---- Media rows ---- */
+  .scroll-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 12px;
+    padding-bottom: 8px;
+    margin-bottom: 4px;
+  }
+  /* Shows while a row has no items. Keep the tags touching (<div ...></div>)
+     with nothing between them, or :empty stops matching. Add an item and it vanishes. */
+  .scroll-container:empty::before {
+    content: "Nothing here yet.";
+    font-size: 0.8rem;
+    opacity: 0.6;
+  }
+
+  /* Image tile: the comment now shows by the cursor (data-tip), not inside the tile */
+  .img-tile {
+    flex: 0 0 180px;
+    height: 130px;
+    background-size: cover;
+    background-position: center;
+    background-color: #b9b9b9;
+    border: 1px solid var(--face-lo);
+    display: block;
+  }
+
+  .video-embed {
+    flex: 0 0 240px;
+    height: 135px;
+    background: #000;
+    border: 1px solid var(--face-lo);
+  }
+  .video-embed iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  .media-card {
+    flex: 0 0 200px;
+    background: #b9b9b9;
+    padding: 10px;
+    border: 1px solid var(--face-lo);
+    font-size: 0.8rem;
+    border-radius: 4px;
+  }
+
+  /* ---- Wandering images (motion is in assets/js/site.js) ---- */
+  .hover-imgs {
+    position: fixed;
+    bottom: 180px; 
+    right: 110px; 
+    width: 220px;
+    height: 220px;
+    z-index: 50;
+    pointer-events: none;
+    transform: scale(0.2); 
+    transform-origin: bottom right;
+  }
+  .hover-imgs img {
+    position: absolute;
+    display: block;
+    will-change: transform;
+  }
+  .hover-imgs .h1 { top: 90px;   left: 60px; }
+  .hover-imgs .h2 { top: 180px; left: 77px; }
+  .hover-imgs .h3 { top: 600px; left: 180px; }
+  .hover-imgs .h4 { top: 80px; left: 60px; }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<div class="col col-left">
+  <h2>Navigation</h2>
+  <nav class="tabs">
+    <a href="main.html">Home</a>
+    <a href="media.html" class="active">Media</a>
+  </nav>
+</div>
+
+<div class="col col-center">
+  <h1>Media Hub</h1>
+  <p>Images, music, movies &amp; TV shows.</p>
+
+  <hr>
+
+  <h2>Images &amp; Art</h2>
+  <!-- To add an image, drop this inside the row:
+       <a href="assets/img/art/FULL.jpg" class="img-tile" data-tip="Your comment" style="background-image: url('assets/img/art/THUMB.jpg');"></a> -->
+  <div class="scroll-container"></div>
+
+  <hr>
+
+  <h2>Music &amp; YouTube Previews</h2>
+  <!-- YouTube:
+       <div class="video-embed"><iframe src="https://www.youtube.com/embed/VIDEO_ID" title="Title" allowfullscreen></iframe></div>
+       Track:
+       <div class="media-card" data-tip="Optional comment"><strong>Track Title</strong><br><span style="opacity:.75">Artist - Album</span><audio controls style="width:100%;margin-top:8px"><source src="assets/audio/FILE.mp3" type="audio/mpeg"></audio></div> -->
+  <div class="scroll-container"></div>
+
+  <hr>
+
+  <h2>Movies &amp; TV Shows</h2>
+  <!-- <div class="media-card" data-tip="Optional comment"><strong>Title (Year)</strong><br><span style="color:#5c2c9c">★★★★☆</span></div> -->
+  <div class="scroll-container"></div>
+</div>
+
+<div class="col col-right">
+  <details>
+    <summary>Projects</summary>
+    <p>
+      <a href="https://empire.tail4fb57b.ts.net/" target="_blank" rel="noopener" data-check-url="https://empire.tail4fb57b.ts.net/">Mao (the card game)</a><br>
+      Multiplayer card game, not finished and may never be. Source on <a href="https://github.com/hafnium-ham/mao_game">GitHub</a>.
+    </p>
+    <p>
+      <a href="oracle.html">Aaronson Oracle</a> — Markov chain predicts if you will choose left or right.
+    </p>
+    <p>
+      <a href="https://github.com/dman7351/mogwai">MOGWAI</a> — Stress test toolkit for CI/CD pipelines
+    </p>
+  </details>
+</div>
+
+</div>
+
+<div class="hover-imgs">
+  <img class="h1" src="assets/img/callie copy.png" alt="">
+  <img class="h2" src="assets/img/callie copy2.png" alt="">
+  <img class="h3" src="assets/img/callie copy3.png" alt="">
+  <img class="h4" src="assets/img/callie copy4.png" alt="">
+</div>
+
+</body>
+</html>
